@@ -55,3 +55,11 @@ app.get('/stop', (req, res) => {
     res.send(`ERROR: ${e}`);
   }
 })
+
+app.get('/index.html', (req, res) => {
+  res.sendFile(__dirname + '/html/index.html');
+})
+
+app.get('/jsmpeg', (req, res) => {
+  res.sendFile(__dirname + '/html/jsmpeg.min.js');
+})
