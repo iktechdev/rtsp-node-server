@@ -8,17 +8,17 @@ let stream;
 
 app.use(cors({
     origin: '*'
-}));
+}), express.json());
 
 app.listen(PORT, (err) => {
   if (err) throw err
   console.log(`> Ready on http://localhost:${PORT}`)
 })
 
-const startStream = (url= null) => {
+const startStream = (url = null) => {
   return new Stream({
     name: "Bunny",
-    streamUrl: url || "rtsp://wowzaec2demo.streamlock.net/vod/mp4:BigBuckBunny_115k.mp4",
+    streamUrl: url,
     wsPort: 5050,
     ffmpegOptions: { // options ffmpeg flags
       "-f": "mpegts", // output file format.
@@ -37,10 +37,10 @@ const startStream = (url= null) => {
   });
 }
 
-app.get('/', (req, res)=> {
+app.post('/', (req, res) => {
   try {
-    //console.log(req.body.url);
-    stream = startStream();
+    const {streamUrl} =  req.body
+    stream = startStream(streamUrl);
     res.send("SUCCESS");
   } catch (e) {
     res.send(`ERROR: ${e}`);
@@ -54,4 +54,12 @@ app.get('/stop', (req, res) => {
   } catch (e) {
     res.send(`ERROR: ${e}`);
   }
+})
+
+app.get('/index.html', (req, res) => {
+  res.sendFile(__dirname + '/html/index.html');
+})
+
+app.get('/jsmpeg', (req, res) => {
+  res.sendFile(__dirname + '/html/jsmpeg.min.js');
 })
