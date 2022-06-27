@@ -4,10 +4,10 @@ const Stream = require("node-rtsp-stream");
 const cors = require('cors');
 
 const PORT = 3001;
-let stream;
+let streamVideo;
 
 app.use(cors({
-    origin: '*'
+  origin: '*'
 }), express.json());
 
 app.listen(PORT, (err) => {
@@ -16,22 +16,21 @@ app.listen(PORT, (err) => {
 })
 
 const startStream = (url = null) => {
-  return new Stream({
+  return streamVideo = new Stream({
     name: "Bunny",
     streamUrl: url,
     wsPort: 5050,
-    ffmpegOptions: { // options ffmpeg flags
-      "-f": "mpegts", // output file format.
-      "-codec:v": "mpeg1video", // video codec
-      "-b:v": "1000k", // video bit rate
+    ffmpegOptions: {
+      "-f": "mpegts",
+      "-codec:v": "mpeg1video",
+      "-b:v": "1000k",
       "-stats": "",
-      "-r": 25, // frame rate
+      "-r": 25,
       "-bf": 0,
-      // audio
-      "-codec:a": "mp2", // audio codec
-      "-ar": 44100, // sampling rate (in Hz)(in Hz)
-      "-ac": 1, // number of audio channels
-      "-b:a": "128k", // audio bit rate
+      "-codec:a": "mp2",
+      "-ar": 44100,
+      "-ac": 1,
+      "-b:a": "128k",
       "-vf": "fps=30"
     },
   });
@@ -39,17 +38,17 @@ const startStream = (url = null) => {
 
 app.post('/', (req, res) => {
   try {
-    const {streamUrl} =  req.body
-    stream = startStream(streamUrl);
+    const { streamUrl } = req.body
+    startStream(streamUrl);
     res.send("SUCCESS");
   } catch (e) {
     res.send(`ERROR: ${e}`);
   }
-}) 
+})
 
 app.get('/stop', (req, res) => {
   try {
-    stream.kill();
+    streamVideo.stop();
     res.send("SUCCESS");
   } catch (e) {
     res.send(`ERROR: ${e}`);
