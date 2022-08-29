@@ -25,17 +25,8 @@ const startStream = (url = null) => {
     streamUrl: url,
     wsPort: WS_PORT,
     ffmpegOptions: {
-      "-f": "mpegts",
-      "-codec:v": "mpeg1video",
-      "-b:v": "1000k",
       "-stats": "",
       "-r": 25,
-      "-bf": 0,
-      "-codec:a": "mp2",
-      "-ar": 44100,
-      "-ac": 1,
-      "-b:a": "128k",
-      "-vf": "fps=30",
       "-q": 4,
     },
   }));
