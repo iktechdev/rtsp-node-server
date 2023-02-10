@@ -1,55 +1,51 @@
-const express = require('express');
+const express = require("express");
 const app = express();
 const Stream = require("node-rtsp-stream");
-const cors = require('cors');
+const cors = require("cors");
 
 const PORT = 3001;
-let stream;
+const WS_PORT = 5050;
+let streamVideo;
 
-app.use(cors({
-    origin: '*'
-}));
+app.use(
+  cors({
+    origin: "*",
+  }),
+  express.json()
+);
 
 app.listen(PORT, (err) => {
-  if (err) throw err
-  console.log(`> Ready on http://localhost:${PORT}`)
-})
+  if (err) throw err;
+  console.log(`> Ready on http://localhost:${PORT}`);
+});
 
-const startStream = (url= null) => {
-  return new Stream({
+const startStream = (url = null) => {
+  return (streamVideo = new Stream({
     name: "Bunny",
-    streamUrl: url || "rtsp://wowzaec2demo.streamlock.net/vod/mp4:BigBuckBunny_115k.mp4",
-    wsPort: 5050,
-    ffmpegOptions: { // options ffmpeg flags
-      "-f": "mpegts", // output file format.
-      "-codec:v": "mpeg1video", // video codec
-      "-b:v": "1000k", // video bit rate
+    streamUrl: url,
+    wsPort: WS_PORT,
+    ffmpegOptions: {
       "-stats": "",
-      "-r": 25, // frame rate
-      "-bf": 0,
-      // audio
-      "-codec:a": "mp2", // audio codec
-      "-ar": 44100, // sampling rate (in Hz)(in Hz)
-      "-ac": 1, // number of audio channels
-      "-b:a": "128k", // audio bit rate
-      "-vf": "fps=30"
+      "-r": 25,
+      "-q": 4,
     },
-  });
-}
+  }));
+};
 
-app.get('/', (req, res)=> {
+app.post("/", (req, res) => {
+  streamVideo?.stop();
   try {
-    //console.log(req.body.url);
-    stream = startStream();
+    const { streamUrl } = req.body;
+    startStream(streamUrl);
     res.send("SUCCESS");
   } catch (e) {
     res.send(`ERROR: ${e}`);
   }
-}) 
+});
 
-app.get('/stop', (req, res) => {
+app.get("/stop", (req, res) => {
   try {
-    stream.kill();
+    streamVideo.stop();
     res.send("SUCCESS");
   } catch (e) {
     res.send(`ERROR: ${e}`);
