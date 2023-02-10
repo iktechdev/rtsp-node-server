@@ -1,18 +1,11 @@
-FROM node:13-alpine
-
-RUN apk add --no-cache ffmpeg
+FROM node:14:alpine
 
 WORKDIR /app
 
-ENV PATH /app/node_modules/.bin:$PATH
+COPY package*.json ./
+RUN yarn
+COPY . .
 
-COPY package.json /app/package.json
-COPY package.json ./package.json
+EXPOSE 8001
 
-COPY html /app/html
-COPY html/jsmpeg.min.js /app/html/jsmpeg.min.js
-
-RUN npm install --silent
-EXPOSE 5050
-
-CMD ["npm", "start"]
+CMD ["yarn", "start"]

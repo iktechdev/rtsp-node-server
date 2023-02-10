@@ -3,7 +3,7 @@ const app = express();
 const Stream = require("node-rtsp-stream");
 const cors = require("cors");
 
-const PORT = 3001;
+const PORT = 8001;
 const WS_PORT = 5050;
 let streamVideo;
 
